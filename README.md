@@ -1,4 +1,4 @@
-## Edacious Snake
+## Retro Snake
 A small HTML5 Canvas Game with extendible function APIs.
 
 ## Warning!!
