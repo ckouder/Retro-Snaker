@@ -1,4 +1,4 @@
-## Retro Snake
+## Retro Snaker
 A small HTML5 Canvas Game with extendible function APIs.
 
 ## Warning!!
