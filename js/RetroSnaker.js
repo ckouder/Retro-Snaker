@@ -1,9 +1,9 @@
 //Edacious-Snake.js
 /**************************************
- * This game has 4 periods,
+ * This game has 5 periods,
  * init, directionChange, rendering, getScore, over
- * each period will release a specific
- * at each period you can develop your 
+ * each period will release a specific event
+ * at each period you can develop your
  * own addons.
  * Good Luck!
  * L.M.G(Ckouder) 2016/9/20
@@ -13,6 +13,12 @@ var Game = (()=> {
 	var ctx, xCount, yCount, d, t, ccPos, cw, ch, preCode
 		, highScore = window.localStorage["highScore"] || 0
 		, wel = true;
+
+	var defaults = {
+		snakeColor: "red",
+		foodColor: "blue",
+		difficulty: "easy"
+	}
 	/***************************************************
 	 *Dead
 	 *	- this function draw the dead scene of the game
@@ -36,6 +42,7 @@ var Game = (()=> {
 	function directionChange(e) {
 		e.preventDefault();
 		var code = e.keyCode || e.which,
+			difficulty = difficultySetting(defaults.difficulty),
 			deter = code == 37
 			|| code == 38
 			|| code == 39
@@ -52,7 +59,7 @@ var Game = (()=> {
 		ccPos = setTimeout(function func() {
 			var f = food.pos,
 				s = snake.pos;
-			t = setTimeout(func, 100);
+			t = setTimeout(func, difficulty);
 			ctx.clearRect(0, 0, cw, ch);
 			addons.publish("Game-rendering", {
 				f: f,
@@ -84,15 +91,30 @@ var Game = (()=> {
 	 *	- colorA: color of the snake
 	 *	- colorB: color of the food
 	 *	this function add the "keyup" eventlistener in the
-	 * DOM and init the food & snake. Init means  to decide 
-	 * the initial food position and the snake position. 
+	 * DOM and init the food & snake. Init means  to decide
+	 * the initial food position and the snake position.
 	 * NOT DRAWING SNAKE & FOOD ON THE CANVAS
-	 * 
+	 *
 	 ***************************************************/
-	function init(el, width, height, colorA, colorB) {
-		var canvas = document.getElementById(el),
-			colorA = colorA || "red",
-			colorB = colorB || "blue";
+	function difficultySetting(string) {
+		switch (string) {
+			case "easy":
+				return 150;
+				break;
+			case "hard":
+				return 70;
+				break;
+			case "hell":
+				return 50;
+				break;
+			default: case "normal":
+				return 100;
+				break;
+		}
+	}
+	function init(el, width, height, difficulty, colorA, colorB) {
+		var canvas = document.getElementById(el);
+		defaults.difficulty = difficulty || defaults.difficulty;
 		cw = width || 500;
 		ch = height || 500;
 		ctx = canvas.getContext('2d');
@@ -101,20 +123,21 @@ var Game = (()=> {
 		yCount = Math.floor(ch / d);
 		canvas.width = xCount*d;
 		canvas.height = yCount*d;
-		snake.color = colorA;
-		food.color = colorB;
+		snake.color = colorA || defaults.snakeColor;
+		food.color = colorB || defaults.foodColor;
 		food.score = 0;
 		document.removeEventListener("keyup", reStart);
 		document.addEventListener("keyup", directionChange);
 		addons.publish("Game-init", {
 			d: d,
+			ctx: ctx,
 			xCount: xCount,
 			yCount: yCount
 		});
 	}
 	/***************************************************
 	 *over()
-	 * 	this game end the game and lead the users to the 
+	 * 	this game end the game and lead the users to the
 	 * dead page
 	 ***************************************************/
 	function over() {
@@ -128,7 +151,7 @@ var Game = (()=> {
 	}
 	/***************************************************
 	 * render()
-	 * this function draw the food and the snake on the 
+	 * this function draw the food and the snake on the
 	 * canvas
 	 ***************************************************/
 	function render(arr) {
@@ -161,12 +184,12 @@ var Game = (()=> {
 	/***************************************************
 	 * reStart(e)
 	 * - e: the keyboardEvent
-	 * 	this function listen the Enter Key press and init 
+	 * 	this function listen the Enter Key press and init
 	 * the game again
 	 ***************************************************/
 	function reStart(e) {
 		if (e.keyCode == 13) {
-			init("canvas", cw, ch, snake.color, food.color);
+			init("canvas", cw, ch, defaults.difficulty, defaults.snakeColor, defaults.foodColor);
 			addons.publish("Game-init");
 		}
 	}
@@ -193,7 +216,8 @@ var Game = (()=> {
 		ctx.fillText("Press \"↑ ↓ ← →\" to Start", cw*3/10, 11*ch/15, cw*2/5);
 	}
 	/***************************************************
-	 * addons: 
+	 * this function is from the internet
+	 * addons:
 	 * -> publish(event, info)
 	 * -> subscrible(event, listener)
 	 *		-> remove();
@@ -243,7 +267,7 @@ var Game = (()=> {
 	 * - init(function): init the food
 	 * - initCheck: check whether the food was initialized
 	 * inside the snake's body and reinitialized it
-	 * - collideCheck(function): check whether the snake 
+	 * - collideCheck(function): check whether the snake
 	 * hit the food
 	 ***************************************************/
 	var food = {
@@ -253,13 +277,14 @@ var Game = (()=> {
 			var pos = this.pos;
 			pos[0] = random(xCount);
 			pos[1] = random(yCount);
-			this.initCheck();
+			this.initCheck(pos, snake.pos);
 			console.log("Init Food Successed!");
 		},
 		initCheck: function(arr, arr2){
 			if (arr2 == undefined) return;
 			for (let el of arr2) {
 				if (arr[0] == el[0] && arr[1] == el[1]) {
+					console.info("Prevent success!");
 					this.init();
 				}
 			};
@@ -281,7 +306,7 @@ var Game = (()=> {
 	 * - pos(array): the coordiantes of each snake body
 	 * - initLength(number): the initial length of the snake
 	 * - init(function): init the snake
-	 * - move(function) -> this.length: 
+	 * - move(function) -> this.length:
 	 * check the user interaction and move the snake
 	 * - collideCheck(function): check whether the snake hits
 	 * itself or the wall and end the game
