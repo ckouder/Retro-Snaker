@@ -9,6 +9,7 @@
 			border: 0;
 			padding: 0;
 		}
+
 		body {
 			display: flex;
 			flex-flow: row;
@@ -27,10 +28,10 @@
 	<canvas id="canvas"></canvas>
 	<script type="text/javascript" src="js/RetroSnaker.js"></script>
 	<script type="text/javascript">
-		Game.addons("Game-init", function() {
-			console.log("Yes!");
+		Game.addons("Game-init", function(obj) {
+			console.log(obj);
 		});
-		Game.init("canvas", 1000, 600);
+		Game.init("canvas", 1000, 600, "normal");
 	</script>
 </body>
 </html>
