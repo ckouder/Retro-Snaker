@@ -34,7 +34,7 @@ essential:
 	code: Arrow key hit by users
   (excute after each step the snake takes)
   
-  - getScore: Get-score -> score(number)
+  - `Get-score` -> score(number)
   (excute after the snake eats the food)
   
   - `Game-over` ->undefined
