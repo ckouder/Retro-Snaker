@@ -78,10 +78,8 @@ var Game = (()=> {
 	 * and the food
 	 ***************************************************/
 	function drawCircle(x, y, d, fillColor) {
-		ctx.beginPath();
-		ctx.arc(x + 0.5*d, y + 0.5*d, 0.5*d, 0, 2*Math.PI);
+		ctx.fillRect(x, y, d, d);
 		ctx.fillStyle = fillColor;
-		ctx.fill();
 	}
 	/***************************************************
 	 *init(el, width, height, colorA, colorB)
@@ -100,16 +98,12 @@ var Game = (()=> {
 		switch (string) {
 			case "easy":
 				return 150;
-				break;
 			case "hard":
 				return 70;
-				break;
 			case "hell":
 				return 50;
-				break;
 			default: case "normal":
 				return 100;
-				break;
 		}
 	}
 	function init(el, width, height, difficulty, colorA, colorB) {
@@ -123,8 +117,10 @@ var Game = (()=> {
 		yCount = Math.floor(ch / d);
 		canvas.width = xCount*d;
 		canvas.height = yCount*d;
-		snake.color = colorA || defaults.snakeColor;
-		food.color = colorB || defaults.foodColor;
+		defaults.snakeColor = (colorA)? colorA : defaults.snakeColor;
+		defaults.foodColor = (colorB)? colorB : defaults.foodColor;
+		snake.color = defaults.snakeColor;
+		food.color = defaults.foodColor;
 		food.score = 0;
 		document.removeEventListener("keyup", reStart);
 		document.addEventListener("keyup", directionChange);
@@ -155,6 +151,8 @@ var Game = (()=> {
 	 * canvas
 	 ***************************************************/
 	function render(arr) {
+		console.log(arr);
+		debugger;
 		if (typeof arr[0] == "number") {
    	    	var _x = arr[0] * d,
     	 	 	_y = arr[1] * d;

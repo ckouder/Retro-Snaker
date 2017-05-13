@@ -1,13 +1,12 @@
+## To start
+```bash
+node main.js
+```
 ## Retro Snaker
 A small HTML5 Canvas Game with extendible function APIs.
 
 ## Warning!!
 It will adjcent its height and width to the best fit size.
-
-## Start a demo:
- ```bash
- node main.js
- ```
 
 ## Usage:
 Game.init(id, [width, height, colorA, colorB]); 
@@ -39,7 +38,7 @@ essential:
 	code: Arrow key hit by users
   (excute after each step the snake takes)
   
-  - `Get-score` -> score(number)
+  - getScore: Get-score -> score(number)
   (excute after the snake eats the food)
   
   - `Game-over` ->undefined
